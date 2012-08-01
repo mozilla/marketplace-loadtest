@@ -1,10 +1,13 @@
 from funkload.FunkLoadTestCase import FunkLoadTestCase
 
 
-class MarketPlaceTest(FunkLoadTestCase):
+class MarketplaceTest(FunkLoadTestCase):
+
+    def setUp(self):
+        self.root = self.conf_get('main', 'root')
 
     def test_index_page(self):
-        pass
+        self.get(self.root, load_auto_links=False)
 
 if __name__ == '__main__':
     import unittest
