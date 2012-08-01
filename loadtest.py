@@ -24,6 +24,7 @@ class MarketplaceTest(FunkLoadTestCase):
 
     def get(self, url, *args, **kwargs):
         return super(MarketplaceTest, self).get(self.root + url,
+                                                load_auto_links=False,
                                                 *args, **kwargs)
 
     def get_all(self, url, *args, **kwargs):
@@ -32,7 +33,7 @@ class MarketplaceTest(FunkLoadTestCase):
         # issuing the request.
         for lang in self.languages:
             self.setHeader('Accept-Languages', lang)
-            self.get(url, load_auto_links=False)
+            self.get(url)
 
     @property
     def apps(self):
@@ -77,7 +78,12 @@ class MarketplaceTest(FunkLoadTestCase):
 def slugify(value):
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
     value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
-    return re.sub('[-\s]+', '-', value)
+    slugified = re.sub('[-\s]+', '-', value)
+
+    # workaround for now
+    if slugified == 'social-communications':
+        return 'social'
+    return slugified
 
 
 if __name__ == '__main__':
