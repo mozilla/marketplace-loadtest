@@ -1,5 +1,7 @@
 import json
+import re
 import random
+import unicodedata
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
 
@@ -18,6 +20,7 @@ class MarketplaceTest(FunkLoadTestCase):
         )
 
         self._apps = None
+        self._categories = None
 
     def get(self, url, *args, **kwargs):
         return super(MarketplaceTest, self).get(self.root + url,
@@ -36,11 +39,20 @@ class MarketplaceTest(FunkLoadTestCase):
         """Gets the list of projects currently contained in the marketplace
         instance
         """
-        if self._apps == None:
+        if not self._apps:
             resp = self.get('/en-US/api/apps/search/')
             content = json.loads(resp.body)
             self._apps = [p['slug'] for p in content['objects']]
         return self._apps
+
+    @property
+    def categories(self):
+        """Gets all the categories from the marketplace"""
+        if not self._categories:
+            resp = self.get('/en-US/api/apps/category/')
+            cats = json.loads(resp.body)['objects']
+            self._categories = [slugify(c['name']) for c in cats]
+        return self._categories
 
     def test_index_page(self):
         self.get_all('/')
@@ -56,6 +68,16 @@ class MarketplaceTest(FunkLoadTestCase):
 
     def test_app_detail(self):
         self.get_all('/app/{app}/'.format(app=random.choice(self.apps)))
+
+    def test_category(self):
+        self.get_all('/apps/{category}'.format(
+            category=random.choice(self.categories)))
+
+
+def slugify(value):
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore')
+    value = unicode(re.sub('[^\w\s-]', '', value).strip().lower())
+    return re.sub('[-\s]+', '-', value)
 
 
 if __name__ == '__main__':
