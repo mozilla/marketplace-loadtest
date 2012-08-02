@@ -9,7 +9,7 @@ from funkload.FunkLoadTestCase import FunkLoadTestCase
 class MarketplaceTest(FunkLoadTestCase):
 
     def setUp(self):
-        self.root = self.conf_get('main', 'root')
+        self.root = self.conf_get('main', 'url')
 
         self.languages = ('fr', 'en-US')
         (
@@ -55,7 +55,7 @@ class MarketplaceTest(FunkLoadTestCase):
             self._categories = [slugify(c['name']) for c in cats]
         return self._categories
 
-    def test_index_page(self):
+    def test_index(self):
         self.get_all('/')
 
     def test_search(self):
