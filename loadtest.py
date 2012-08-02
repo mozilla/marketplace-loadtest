@@ -58,6 +58,12 @@ class MarketplaceTest(FunkLoadTestCase):
     def test_index(self):
         self.get_all('/')
 
+    def test_everything(self):
+        self.test_index()
+        self.test_search()
+        self.test_category()
+        self.test_app_detail()
+
     def test_search(self):
         # make a request that returning all the apps registered in the
         # marketplace.
