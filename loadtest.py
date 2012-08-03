@@ -10,8 +10,7 @@ class MarketplaceTest(FunkLoadTestCase):
     def setUp(self):
         self.root = self.conf_get('main', 'url')
 
-        self.languages = ('fr', 'en-US')
-        (
+        self.languages = (
             'af', 'ar', 'bg', 'ca', 'cs', 'da', 'de', 'el', 'en-US', 'es',
             'eu', 'fa', 'fi', 'fr', 'ga-IE', 'he', 'hu', 'id', 'it', 'ja',
             'ko', 'mn', 'nl', 'pl', 'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sl',
