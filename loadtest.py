@@ -1,6 +1,5 @@
 import json
 import re
-import random
 import unicodedata
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
@@ -69,16 +68,13 @@ class MarketplaceTest(FunkLoadTestCase):
         # marketplace.
         self.get_all('/search/?q=')
 
-        # get a project randomly from the marketplace and make a research on
-        # it.
-        self.get_all('/search/?q=%s' % random.choice(self.apps))
+        self.get_all('/search/?q=%s' % self.apps[0])
 
     def test_app_detail(self):
-        self.get_all('/app/{app}/'.format(app=random.choice(self.apps)))
+        self.get_all('/app/{app}/'.format(app=self.apps[0]))
 
     def test_category(self):
-        self.get_all('/apps/{category}'.format(
-            category=random.choice(self.categories)))
+        self.get_all('/apps/{category}'.format(category=self.categories[0]))
 
 
 def slugify(value):
