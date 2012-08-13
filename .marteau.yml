@@ -2,9 +2,4 @@ name: MarketPlace
 test: MarketplaceTest.test_everything
 script: loadtest.py
 xml: simple-bench.xml
-nodes:
-    - client4.scl2.svc.mozilla.com
-    - client5.scl2.svc.mozilla.com
-    - client6.scl2.svc.mozilla.com
-    - client8.scl2.svc.mozilla.com
-    - client9.scl2.svc.mozilla.com
+nodes: 5
