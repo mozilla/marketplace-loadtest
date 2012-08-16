@@ -17,7 +17,11 @@ class MarketplaceTest(FunkLoadTestCase):
 
         # this hardcodes the list of categories so no call to the API will be
         # made to get it.
-        self._categories = None
+        self._categories = ('entertainment-sports', u'business', u'games',
+            u'music', u'news-weather', u'productivity', 'social',
+            u'travel', u'books-reference', u'education', u'health-fitness',
+            u'lifestyle', u'photos-media', u'utilities', u'shopping')
+
         self._apps = None
 
         super(MarketplaceTest, self).__init__(*args, **kwargs)
