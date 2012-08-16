@@ -53,21 +53,9 @@ class MarketplaceTest(FunkLoadTestCase):
 
     @property
     def apps(self):
-        def _build_app_list(max_retry=10):
-            try:
-                return random.sample(self.get_apps(), 4)
-            except:
-                if max_retry > 0:
-                    return _build_app_list(max_retry - 1)
-                else:
-                    # if we fail more than max_retry times, return an hardcoded
-                    # list.
-                    return ['galactians2', 'ghosts-vs-zombies',
-                            'fullscreen-clock', 'my-chat-place']
-
         if self._apps is None:
-            self._apps = _build_app_list()
-        self.logger.info('apps: "%s"' % ', '.join(self._apps))
+            self._apps = random.sample(self.get_apps(), 4)
+            self.logger.info('apps: "%s"' % ', '.join(self._apps))
         return self._apps
 
     def get_apps(self):
