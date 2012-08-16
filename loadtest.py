@@ -7,7 +7,7 @@ from funkload.FunkLoadTestCase import FunkLoadTestCase
 
 class MarketplaceTest(FunkLoadTestCase):
 
-    def setUp(self):
+    def __init__(self, *args, **kwargs):
         self.root = self.conf_get('main', 'url')
 
         self.languages = (
