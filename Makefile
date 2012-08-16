@@ -8,7 +8,7 @@ test:
 	bin/fl-run-test loadtest.py
 
 bench:
-	bin/fl-run-bench loadtest.py MarketplaceTest.test_everything
+	bin/fl-run-bench loadtest.py MarketplaceTest.test_marketplace
 
 report:
 	bin/fl-build-report --html -o html simple-bench.xml

@@ -1,5 +1,6 @@
 import json
 import re
+import random
 import unicodedata
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
@@ -8,84 +9,85 @@ from funkload.FunkLoadTestCase import FunkLoadTestCase
 class MarketplaceTest(FunkLoadTestCase):
 
     def __init__(self, *args, **kwargs):
-        self.languages = (
-            'af', 'ar', 'bg', 'ca', 'cs', 'da', 'de', 'el', 'en-US', 'es',
+        super(MarketplaceTest, self).__init__(*args, **kwargs)
+
+        self.root = self.conf_get('main', 'url')
+
+        # on startup, select one language and a bunch of categories /
+        # applications to use when running the test.
+        languages = [
+            'af', 'ar', 'bg', 'ca', 'cs', 'da', 'de', 'el', 'es',
             'eu', 'fa', 'fi', 'fr', 'ga-IE', 'he', 'hu', 'id', 'it', 'ja',
             'ko', 'mn', 'nl', 'pl', 'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sl',
-            'sq', 'sv-SE', 'uk', 'vi', 'zh-CN', 'zh-TW',
-        )
+            'sq', 'sv-SE', 'uk', 'vi', 'zh-CN', 'zh-TW']
 
-        # this hardcodes the list of categories so no call to the API will be
-        # made to get it.
-        self._categories = ('entertainment-sports', u'business', u'games',
+        # consider that 50% of the traffic is english.
+        languages.extend(('en-US',) * int(0.5 * (len(languages) + 1)))
+        self.lang = random.choice(languages)
+
+        # select 4 categories and 4 applicatoins out of all of them.
+        categories = ('entertainment-sports', u'business', u'games',
             u'music', u'news-weather', u'productivity', 'social',
             u'travel', u'books-reference', u'education', u'health-fitness',
             u'lifestyle', u'photos-media', u'utilities', u'shopping')
 
-        self._apps = None
+        self.categories = random.sample(categories, 4)
 
-        super(MarketplaceTest, self).__init__(*args, **kwargs)
-
-    def setUp(self):
-        self.root = self.conf_get('main', 'url')
+        apps = self.get_apps()
+        self.apps = random.sample(apps, 4)
 
     def get(self, url, *args, **kwargs):
+        """Do a GET request with the given URL.
+
+        This call sets the Accept-Languages header and ask funkload to now
+        follow img/css/js links.
+        """
         # when GETing an URL, we don't want to follow the links (img, css etc)
         # as they could be done on the fly by javascript in an obstrusive way.
         # we also prepend the domain (self.root) to the get calls in this
         # method.
+        self.setHeader('Accept-Languages', self.lang)
         return super(MarketplaceTest, self).get(self.root + url,
                                                 load_auto_links=False,
                                                 *args, **kwargs)
 
-    def get_all(self, url, *args, **kwargs):
-        # Do a request for each defined langauge rather than only one request,
-        # and takes care about setting the Accept-Langauge header before
-        # issuing the request.
-        for lang in self.languages:
-            self.setHeader('Accept-Languages', lang)
-            self.get(url)
+    def get_apps(self):
+        """Get the list of apps from the marketplace API"""
+        resp = self.get('/en-US/api/apps/search/')
+        content = json.loads(resp.body)
+        return [p['slug'] for p in content['objects']]
 
-    @property
-    def apps(self):
-        """Gets the list of projects currently contained in the marketplace
-        instance, and cache it.
-        """
-        if not self._apps:
-            resp = self.get('/en-US/api/apps/search/')
-            content = json.loads(resp.body)
-            self._apps = [p['slug'] for p in content['objects']]
-        return self._apps
+    def get_categories(self):
+        """Get all the categories from the marketplace API"""
+        resp = self.get('/en-US/api/apps/category/')
+        cats = json.loads(resp.body)['objects']
+        return [slugify(c['name']) for c in cats]
 
-    @property
-    def categories(self):
-        """Gets all the categories from marketplace, and cache them"""
-        if not self._categories:
-            resp = self.get('/en-US/api/apps/category/')
-            cats = json.loads(resp.body)['objects']
-            self._categories = [slugify(c['name']) for c in cats]
-        return self._categories
+    def query_index(self):
+        self.get('/')
 
-    def test_index(self):
-        self.get_all('/')
-
-    def test_search(self):
+    def query_search(self):
         # make a request that returning all the apps registered in the
         # marketplace.
-        self.get_all('/search/?q=')
-        self.get_all('/search/?q=%s' % self.apps[0])
+        self.get('/search/?q=')
 
-    def test_app_detail(self):
-        self.get_all('/app/{app}/'.format(app=self.apps[0]))
+        # and then do a search with the name of the selected apps
+        for app in self.apps:
+            self.get('/search/?q=%s' % app)
 
-    def test_category(self):
-        self.get_all('/apps/{category}'.format(category=self.categories[0]))
+    def query_apps_detail(self):
+        for app in self.apps:
+            self.get('/app/{app}/'.format(app=app))
 
-    def test_everything(self):
-        self.test_index()
-        self.test_search()
-        self.test_category()
-        self.test_app_detail()
+    def query_categories(self):
+        for category in self.categories:
+            self.get('/apps/{category}'.format(category=category))
+
+    def test_marketplace(self):
+        self.query_index()
+        self.query_search()
+        self.query_categories()
+        self.query_apps_detail()
 
 
 def slugify(value):
