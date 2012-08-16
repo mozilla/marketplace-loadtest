@@ -33,12 +33,8 @@ class MarketplaceTest(FunkLoadTestCase):
             u'lifestyle', u'photos-media', u'utilities', u'shopping')
 
         self.categories = random.sample(categories, 4)
-
         self.logger.info('categories: "%s"' % ', '.join(self.categories))
-
-        apps = self.get_apps()
-        self.apps = random.sample(apps, 4)
-        self.logger.info('apps: "%s"' % ', '.join(self.apps))
+        self._apps = None
 
     def get(self, url, *args, **kwargs):
         """Do a GET request with the given URL.
@@ -55,9 +51,28 @@ class MarketplaceTest(FunkLoadTestCase):
                                                 load_auto_links=False,
                                                 *args, **kwargs)
 
+    @property
+    def apps(self):
+        def _build_app_list(max_retry=10):
+            try:
+                return random.sample(self.get_apps(), 4)
+            except:
+                if max_retry > 0:
+                    return _build_app_list(max_retry - 1)
+                else:
+                    # if we fail more than max_retry times, return an hardcoded
+                    # list.
+                    return ['galactians2', 'ghosts-vs-zombies',
+                            'fullscreen-clock', 'my-chat-place']
+
+        if self._apps is None:
+            self._apps = _build_app_list()
+        self.logger.info('apps: "%s"' % ', '.join(self._apps))
+        return self._apps
+
     def get_apps(self):
         """Get the list of apps from the marketplace API"""
-        resp = self.get('/en-US/api/apps/search/')
+        resp = self.get('/api/apps/search/')
         content = json.loads(resp.body)
         return [p['slug'] for p in content['objects']]
 
