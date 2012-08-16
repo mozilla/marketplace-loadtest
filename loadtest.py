@@ -24,6 +24,7 @@ class MarketplaceTest(FunkLoadTestCase):
         # consider that 50% of the traffic is english.
         languages.extend(('en-US',) * int(0.5 * (len(languages) + 1)))
         self.lang = random.choice(languages)
+        self.logger.info('Language: "%s"' % self.lang)
 
         # select 4 categories and 4 applicatoins out of all of them.
         categories = ('entertainment-sports', u'business', u'games',
@@ -33,8 +34,11 @@ class MarketplaceTest(FunkLoadTestCase):
 
         self.categories = random.sample(categories, 4)
 
+        self.logger.info('categories: "%s"' % ', '.join(self.categories))
+
         apps = self.get_apps()
         self.apps = random.sample(apps, 4)
+        self.logger.info('apps: "%s"' % ', '.join(self.apps))
 
     def get(self, url, *args, **kwargs):
         """Do a GET request with the given URL.
