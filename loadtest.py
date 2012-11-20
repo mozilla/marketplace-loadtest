@@ -87,11 +87,28 @@ class MarketplaceTest(FunkLoadTestCase):
         for category in self.categories:
             self.get('/apps/{category}'.format(category=category))
 
+    def view_homepage(self):
+        ret = self.get('/')
+        self.assertTrue('Categories' in ret.body)
+        self.assertTrue('Games' in ret.body)
+
+    def search_app(self):
+        # TODO Searching without a query string might be too expensive
+        ret = self.get('/search/?q=', ok_codes=[200, 503])
+        if ret.code == 503:
+            self.assertTrue('Search Unavailable' in ret.body)
+        else:
+            self.assertTrue('Search Results' in ret.body)
+
     def test_marketplace(self):
-        self.query_index()
-        self.query_search()
-        self.query_categories()
-        self.query_apps_detail()
+        if self.in_bench_mode:
+            self.query_index()
+            self.query_search()
+            self.query_categories()
+            self.query_apps_detail()
+        else:
+            self.view_homepage()
+            self.search_app()
 
 
 def slugify(value):
