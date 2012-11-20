@@ -5,6 +5,8 @@ import unicodedata
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
 
+USER_AGENT = 'Mozilla/5.0 (Android; Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'
+
 
 class MarketplaceTest(FunkLoadTestCase):
 
@@ -107,6 +109,7 @@ class MarketplaceTest(FunkLoadTestCase):
             self.query_categories()
             self.query_apps_detail()
         else:
+            self.setHeader('User-Agent', USER_AGENT)
             self.view_homepage()
             self.search_app()
 
