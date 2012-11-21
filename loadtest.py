@@ -103,6 +103,13 @@ class MarketplaceTest(FunkLoadTestCase):
         else:
             self.assertTrue('Search Results' in ret.body)
 
+    def install_free_app(self):
+        # all the logic for free apps is client side - as long as the
+        # manifest url is in the page, the process should succeed
+        ret = self.get('/app/twitter')
+        self.assertTrue('data-manifest_url='
+            '"https://mobile.twitter.com/cache/twitter.webapp"' in ret.body)
+
     def test_marketplace(self):
         if self.in_bench_mode:
             self.query_index()
@@ -113,6 +120,7 @@ class MarketplaceTest(FunkLoadTestCase):
             self.setHeader('User-Agent', USER_AGENT)
             self.view_homepage()
             self.search_app()
+            self.install_free_app()
 
 
 def slugify(value):
