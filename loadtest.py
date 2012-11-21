@@ -95,8 +95,9 @@ class MarketplaceTest(FunkLoadTestCase):
         self.assertTrue('Games' in ret.body)
 
     def search_app(self):
-        # TODO Searching without a query string might be too expensive
-        ret = self.get('/search/?q=', ok_codes=[200, 503])
+        # search for some non-empty string, to make a realistic and not
+        # too expensive query
+        ret = self.get('/search/?q=twi', ok_codes=[200, 503])
         if ret.code == 503:
             self.assertTrue('Search Unavailable' in ret.body)
         else:
