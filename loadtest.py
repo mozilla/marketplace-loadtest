@@ -64,7 +64,7 @@ class MarketplaceTest(FunkLoadTestCase):
     def query_search(self):
         # do a search with the name of the selected apps
         for app in self.apps:
-            self.get('/search/?q=%s' % app)
+            self.search_app(query=app)
 
     def query_apps_detail(self):
         for app in self.apps:
@@ -79,10 +79,10 @@ class MarketplaceTest(FunkLoadTestCase):
         self.assertTrue('Categories' in ret.body)
         self.assertTrue('Games' in ret.body)
 
-    def search_app(self):
+    def search_app(self, query='twi'):
         # search for some non-empty string, to make a realistic and not
         # too expensive query
-        ret = self.get('/search/?q=twi', ok_codes=[200, 503])
+        ret = self.get('/search/?q=%s' % query, ok_codes=[200, 503])
         if ret.code == 503:
             self.assertTrue('Search Unavailable' in ret.body)
         else:
