@@ -62,11 +62,7 @@ class MarketplaceTest(FunkLoadTestCase):
         return [slugify(c['name']) for c in cats]
 
     def query_search(self):
-        # make a request that returning all the apps registered in the
-        # marketplace.
-        self.get('/search/?q=')
-
-        # and then do a search with the name of the selected apps
+        # do a search with the name of the selected apps
         for app in self.apps:
             self.get('/search/?q=%s' % app)
 
