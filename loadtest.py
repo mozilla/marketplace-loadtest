@@ -14,12 +14,10 @@ class MarketplaceTest(FunkLoadTestCase):
         super(MarketplaceTest, self).__init__(*args, **kwargs)
 
         self.root = self.conf_get('main', 'url')
+        self.lang = 'en-US'
 
-        # on startup, select one language and a bunch of categories /
+        # on startup, select a bunch of categories /
         # applications to use when running the test.
-        languages = ['en-US', 'pt-BR']
-        self.lang = random.choice(languages)
-
         # select 4 categories and 4 applications out of all of them.
         categories = ('entertainment-sports', u'business', u'games',
             u'music', u'news-weather', u'productivity', 'social',
