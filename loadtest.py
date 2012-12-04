@@ -95,10 +95,15 @@ class MarketplaceTest(FunkLoadTestCase):
         self.assertTrue('data-manifest_url='
             '"https://mobile.twitter.com/cache/twitter.webapp"' in ret.body)
 
+    def submit_app(self):
+        # todo - add auth
+        pass
+
     def test_marketplace(self):
         self.view_homepage()
         self.search_app()
         self.install_free_app()
+        self.submit_app()
 
         # generate some more random load
         self.query_search()
