@@ -87,6 +87,7 @@ class MarketplaceTest(FunkLoadTestCase):
             self.assertTrue('Search Unavailable' in ret.body)
         else:
             self.assertTrue('Search Results' in ret.body)
+        self.assertEqual(ret.code, 200)
 
     def install_free_app(self):
         # all the logic for free apps is client side - as long as the
