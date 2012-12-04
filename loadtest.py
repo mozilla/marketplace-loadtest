@@ -62,9 +62,6 @@ class MarketplaceTest(FunkLoadTestCase):
         cats = json.loads(resp.body)['objects']
         return [slugify(c['name']) for c in cats]
 
-    def query_index(self):
-        self.get('/')
-
     def query_search(self):
         # make a request that returning all the apps registered in the
         # marketplace.
@@ -104,16 +101,15 @@ class MarketplaceTest(FunkLoadTestCase):
             '"https://mobile.twitter.com/cache/twitter.webapp"' in ret.body)
 
     def test_marketplace(self):
-        if self.in_bench_mode:
-            self.query_index()
-            self.query_search()
-            self.query_categories()
-            self.query_apps_detail()
-        else:
-            self.setHeader('User-Agent', USER_AGENT)
-            self.view_homepage()
-            self.search_app()
-            self.install_free_app()
+        self.setHeader('User-Agent', USER_AGENT)
+        self.view_homepage()
+        self.search_app()
+        self.install_free_app()
+
+        # generate some more random load
+        self.query_search()
+        self.query_categories()
+        self.query_apps_detail()
 
 
 def slugify(value):
