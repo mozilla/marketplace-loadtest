@@ -40,6 +40,7 @@ class MarketplaceTest(FunkLoadTestCase):
         # we also prepend the domain (self.root) to the get calls in this
         # method.
         self.setHeader('Accept-Languages', self.lang)
+        self.setHeader('User-Agent', USER_AGENT)
         return super(MarketplaceTest, self).get(self.root + url,
                                                 load_auto_links=False,
                                                 *args, **kwargs)
@@ -101,7 +102,6 @@ class MarketplaceTest(FunkLoadTestCase):
             '"https://mobile.twitter.com/cache/twitter.webapp"' in ret.body)
 
     def test_marketplace(self):
-        self.setHeader('User-Agent', USER_AGENT)
         self.view_homepage()
         self.search_app()
         self.install_free_app()
