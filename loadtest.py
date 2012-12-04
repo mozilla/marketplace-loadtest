@@ -17,17 +17,10 @@ class MarketplaceTest(FunkLoadTestCase):
 
         # on startup, select one language and a bunch of categories /
         # applications to use when running the test.
-        languages = [
-            'af', 'ar', 'bg', 'ca', 'cs', 'da', 'de', 'el', 'es',
-            'eu', 'fa', 'fi', 'fr', 'ga-IE', 'he', 'hu', 'id', 'it', 'ja',
-            'ko', 'mn', 'nl', 'pl', 'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sl',
-            'sq', 'sv-SE', 'uk', 'vi', 'zh-CN', 'zh-TW']
-
-        # consider that 50% of the traffic is english.
-        languages.extend(('en-US',) * int(0.5 * (len(languages) + 1)))
+        languages = ['en-US', 'pt-BR']
         self.lang = random.choice(languages)
 
-        # select 4 categories and 4 applicatoins out of all of them.
+        # select 4 categories and 4 applications out of all of them.
         categories = ('entertainment-sports', u'business', u'games',
             u'music', u'news-weather', u'productivity', 'social',
             u'travel', u'books-reference', u'education', u'health-fitness',
@@ -39,7 +32,7 @@ class MarketplaceTest(FunkLoadTestCase):
     def get(self, url, *args, **kwargs):
         """Do a GET request with the given URL.
 
-        This call sets the Accept-Languages header and ask funkload to now
+        This call sets the Accept-Languages header and ask funkload to not
         follow img/css/js links.
         """
         # when GETing an URL, we don't want to follow the links (img, css etc)
