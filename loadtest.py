@@ -5,7 +5,11 @@ import unicodedata
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
 
+from util import read_password
+
 USER_AGENT = 'Mozilla/5.0 (Android; Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'
+CSRF_REGEX = re.compile(r'.*csrfmiddlewaretoken\' value=\'(.*)\'')
+WEBAPP = 'http://mozilla-services.github.com/ha-test-web-app/manifest.webapp'
 
 
 class MarketplaceTest(FunkLoadTestCase):
@@ -101,8 +105,30 @@ class MarketplaceTest(FunkLoadTestCase):
             '"https://mobile.twitter.com/cache/twitter.webapp"' in ret.body)
 
     def submit_app(self):
-        # todo - add auth
-        pass
+        self.setBasicAuth('developer@mozilla.com', read_password())
+        # check logged-in view
+        ret = self.get('/')
+        # try to submit an app
+        ret = self.get('/developers/submit/app', ok_codes=[200, 302])
+
+        # TODO - figure out how CSRF tokens are managed on stage
+        # they aren't part of the page/DOM and I don't see any cookie
+        return
+
+        # we need to accept the TOS once per user
+        if 'read_dev_agreement' in ret.body:
+            params = [['read_dev_agreement', 'True']]
+            add_csrf_token(ret, params)
+            ret = self.post(ret.url, params=params)
+        # now we can submit the app details
+        # params = [['upload', ''],
+        #           ['manifest', WEBAPP],
+        #           ['free', 'free-os'],
+        #           ['free', 'free-desktop'],
+        #           ['free', 'free-phone'],
+        #           ['free', 'free-tablet']]
+        # add_csrf_token(ret, params)
+        # ret = self.post(ret.url, params=params)
 
     def test_marketplace(self):
         self.view_homepage()
@@ -114,6 +140,12 @@ class MarketplaceTest(FunkLoadTestCase):
         self.query_search()
         self.query_categories()
         self.query_apps_detail()
+
+
+def add_csrf_token(response, params):
+    token = CSRF_REGEX.findall(response.body)
+    if token:
+        params.append(['csrfmiddlewaretoken', token[0]])
 
 
 def slugify(value):
