@@ -43,6 +43,10 @@ class MarketplaceTest(FunkLoadTestCase):
                                                 load_auto_links=False,
                                                 *args, **kwargs)
 
+    def post(self, url, *args, **kwargs):
+        return super(MarketplaceTest, self).post(self.root + url,
+            load_auto_links=False, *args, **kwargs)
+
     @property
     def apps(self):
         if self._apps is None:
