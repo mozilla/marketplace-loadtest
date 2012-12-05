@@ -134,7 +134,10 @@ class MarketplaceTest(FunkLoadTestCase):
         self.view_homepage()
         self.search_app()
         self.install_free_app()
-        self.submit_app()
+        try:
+            self.submit_app()
+        finally:
+            self.clearBasicAuth()
 
         # generate some more random load
         self.query_search()
