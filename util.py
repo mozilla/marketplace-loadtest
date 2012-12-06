@@ -2,7 +2,7 @@ import os
 import os.path
 
 
-DEFAULT_LOCATION = os.path.join('/var', 'loadtest', 'loadtest')
+DEFAULT_LOCATION = os.path.expanduser(os.path.join('~', 'loadtest.auth'))
 
 
 def read_password(location=DEFAULT_LOCATION):
