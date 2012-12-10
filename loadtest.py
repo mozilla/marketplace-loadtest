@@ -1,6 +1,7 @@
+import base64
 import json
-import re
 import random
+import re
 import unicodedata
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
@@ -30,6 +31,14 @@ class MarketplaceTest(FunkLoadTestCase):
 
         self.categories = random.sample(categories, 4)
         self._apps = None
+
+    def setBasicAuth(self, username, password):
+        '''Set the Basic authentication information to the given username
+        and password.
+        '''
+        self._browser.authinfo = base64.b64encode('%s:%s' % (username,
+            password)).strip()
+        self._authinfo = '%s:%s@' % (username, password)
 
     def get(self, url, *args, **kwargs):
         """Do a GET request with the given URL.
@@ -113,7 +122,6 @@ class MarketplaceTest(FunkLoadTestCase):
 
         # TODO - figure out how CSRF tokens are managed on stage
         # they aren't part of the page/DOM and I don't see any cookie
-        return
 
         # we need to accept the TOS once per user
         if 'read_dev_agreement' in ret.body:
