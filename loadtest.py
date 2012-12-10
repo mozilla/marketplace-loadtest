@@ -176,6 +176,8 @@ class MarketplaceTest(FunkLoadTestCase):
 
     def test_editor(self):
         # XXX not done yet
+        # XXX we should delete some apps here too
+        # so we don't grow the DB
         pass
 
     def test_marketplace(self):
