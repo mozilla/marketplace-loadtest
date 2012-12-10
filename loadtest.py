@@ -120,15 +120,21 @@ class MarketplaceTest(FunkLoadTestCase):
             params = [['read_dev_agreement', 'True']]
             add_csrf_token(ret, params)
             ret = self.post(ret.url, params=params)
-        # now we can submit the app details
-        # params = [['upload', ''],
-        #           ['manifest', WEBAPP],
-        #           ['free', 'free-os'],
-        #           ['free', 'free-desktop'],
-        #           ['free', 'free-phone'],
-        #           ['free', 'free-tablet']]
-        # add_csrf_token(ret, params)
-        # ret = self.post(ret.url, params=params)
+        # submit the manifest
+        params = [['manifest', WEBAPP]]
+        add_csrf_token(ret, params)
+        ret = self.post('/developers/upload-manifest', params=params)
+        data = json.loads(ret.body)
+        self.assertEqual(data['validation']['errors'], 0, data)
+        # now we can submit the app details, first load the form again
+        ret = self.get('/developers/submit/app', ok_codes=[200, 302])
+        params = [['upload', data['upload']],
+                  ['free', 'free-os'],
+                  ['free', 'free-desktop'],
+                  ['free', 'free-phone'],
+                  ['free', 'free-tablet']]
+        add_csrf_token(ret, params)
+        ret = self.post('/developers/submit/app', params=params)
 
     def test_marketplace(self):
         self.view_homepage()
