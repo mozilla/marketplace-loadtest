@@ -130,6 +130,16 @@ class MarketplaceTest(FunkLoadTestCase):
         add_csrf_token(ret, params)
         ret = self.post('/developers/upload-manifest', params=params)
         data = json.loads(ret.body)
+        validation = data['validation']
+        app_exists = False
+        if validation['errors']:
+            messages = [m['message'] for m in data['validation']['messages']]
+            app_exists = 'app already exists' in ' '.join(messages)
+
+        # we should be able to test editing the app
+        if app_exists:
+            return
+
         self.assertEqual(data['validation']['errors'], 0, data)
         # now we can submit the app basics, first load the form again
         ret = self.get('/developers/submit/app/manifest')
