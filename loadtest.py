@@ -131,15 +131,16 @@ class MarketplaceTest(FunkLoadTestCase):
         ret = self.post('/developers/upload-manifest', params=params)
         data = json.loads(ret.body)
         self.assertEqual(data['validation']['errors'], 0, data)
-        # now we can submit the app details, first load the form again
-        ret = self.get('/developers/submit/app', ok_codes=[200, 302])
+        # now we can submit the app basics, first load the form again
+        ret = self.get('/developers/submit/app/manifest')
         params = [['upload', data['upload']],
                   ['free', 'free-os'],
                   ['free', 'free-desktop'],
                   ['free', 'free-phone'],
                   ['free', 'free-tablet']]
         add_csrf_token(ret, params)
-        ret = self.post('/developers/submit/app', params=params)
+        ret = self.post('/developers/submit/app/manifest', params=params)
+        self.assertTrue('/mozilla-ha-test-web-app' in ret.url, ret.url)
 
     def test_marketplace(self):
         self.view_homepage()
