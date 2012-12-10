@@ -157,19 +157,30 @@ class MarketplaceTest(FunkLoadTestCase):
         ret = self.post('/developers/submit/app/manifest', params=params)
         self.assertTrue('/submit/app/details/' in ret.url, ret.url)
 
-    def test_marketplace(self):
+    def test_end_user(self):
         self.view_homepage()
         self.search_app()
         self.install_free_app()
+        # generate some more random load
+        self.query_search()
+        self.query_categories()
+        self.query_apps_detail()
+
+    def test_developer(self):
+        self.view_homepage()
+        self.search_app()
         try:
             self.submit_app()
         finally:
             self.clearBasicAuth()
 
-        # generate some more random load
-        self.query_search()
-        self.query_categories()
-        self.query_apps_detail()
+    def test_editor(self):
+        # XXX not done yet
+        pass
+
+    def test_marketplace(self):
+        # pick a random scenario and run it
+        random.choice([self.test_developer, self.test_end_user])()
 
 
 def add_csrf_token(response, params):
