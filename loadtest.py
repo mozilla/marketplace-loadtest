@@ -134,7 +134,7 @@ class MarketplaceTest(FunkLoadTestCase):
         app_exists = False
         if validation['errors']:
             messages = [m['message'] for m in data['validation']['messages']]
-            app_exists = 'app already exists' in ' '.join(messages)
+            app_exists = 'already' in ' '.join(messages)
 
         # we should be able to test editing the app
         if app_exists:
