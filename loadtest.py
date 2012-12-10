@@ -120,9 +120,6 @@ class MarketplaceTest(FunkLoadTestCase):
         # try to submit an app
         ret = self.get('/developers/submit/app', ok_codes=[200, 302])
 
-        # TODO - figure out how CSRF tokens are managed on stage
-        # they aren't part of the page/DOM and I don't see any cookie
-
         # we need to accept the TOS once per user
         if 'read_dev_agreement' in ret.body:
             params = [['read_dev_agreement', 'True']]
