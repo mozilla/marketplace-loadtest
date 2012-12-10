@@ -3,6 +3,7 @@ import json
 import random
 import re
 import unicodedata
+import uuid
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
 
@@ -10,7 +11,7 @@ from util import read_password
 
 USER_AGENT = 'Mozilla/5.0 (Android; Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'
 CSRF_REGEX = re.compile(r'.*csrfmiddlewaretoken\' value=\'(.*)\'')
-WEBAPP = 'http://mozilla-services.github.com/ha-test-web-app/manifest.webapp'
+WEBAPP = 'http://%s.webapp.lolnet.org/manifest.webapp'
 
 
 class MarketplaceTest(FunkLoadTestCase):
@@ -120,13 +121,17 @@ class MarketplaceTest(FunkLoadTestCase):
         # try to submit an app
         ret = self.get('/developers/submit/app', ok_codes=[200, 302])
 
+        # generate a random web-app manifest
+        random_id = uuid.uuid1().hex
+        manifest_url = WEBAPP % random_id
+
         # we need to accept the TOS once per user
         if 'read_dev_agreement' in ret.body:
             params = [['read_dev_agreement', 'True']]
             add_csrf_token(ret, params)
             ret = self.post(ret.url, params=params)
         # submit the manifest
-        params = [['manifest', WEBAPP]]
+        params = [['manifest', manifest_url]]
         add_csrf_token(ret, params)
         ret = self.post('/developers/upload-manifest', params=params)
         data = json.loads(ret.body)
@@ -150,7 +155,7 @@ class MarketplaceTest(FunkLoadTestCase):
                   ['free', 'free-tablet']]
         add_csrf_token(ret, params)
         ret = self.post('/developers/submit/app/manifest', params=params)
-        self.assertTrue('/mozilla-ha-test-web-app' in ret.url, ret.url)
+        self.assertTrue('/submit/app/details/' in ret.url, ret.url)
 
     def test_marketplace(self):
         self.view_homepage()
