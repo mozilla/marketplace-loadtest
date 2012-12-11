@@ -115,9 +115,6 @@ class MarketplaceTest(FunkLoadTestCase):
             '"https://mobile.twitter.com/cache/twitter.webapp"' in ret.body)
 
     def submit_app(self):
-        self.setBasicAuth('developer@mozilla.com', read_password())
-        # check logged-in view
-        ret = self.get('/')
         # try to submit an app
         ret = self.get('/developers/submit/app', ok_codes=[200, 302])
 
@@ -167,9 +164,10 @@ class MarketplaceTest(FunkLoadTestCase):
         self.query_apps_detail()
 
     def test_developer(self):
-        self.view_homepage()
-        self.search_app()
         try:
+            self.setBasicAuth('developer@mozilla.com', read_password())
+            self.view_homepage()
+            self.search_app()
             self.submit_app()
         finally:
             self.clearBasicAuth()
