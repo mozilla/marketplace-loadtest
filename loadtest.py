@@ -224,7 +224,7 @@ class MarketplaceTest(FunkLoadTestCase):
             self._ranges = [(self.test_editor, (1, 2)),
                             (self.test_developer, (3, 11)),
                             (self.test_end_user, (12, 22)),
-                            (self.test_anonymous, (22, 100)]
+                            (self.test_anonymous, (22, 100))]
 
         for test_, range_ in self._ranges:
             if pick in range_:
