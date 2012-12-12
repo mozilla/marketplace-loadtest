@@ -32,6 +32,7 @@ class MarketplaceTest(FunkLoadTestCase):
 
         self.categories = random.sample(categories, 4)
         self._apps = None
+        self._ranges = None
 
     def setBasicAuth(self, username, password):
         '''Set the Basic authentication information to the given username
@@ -154,18 +155,23 @@ class MarketplaceTest(FunkLoadTestCase):
         ret = self.post('/developers/submit/app/manifest', params=params)
         self.assertTrue('/submit/app/details/' in ret.url, ret.url)
 
-    def test_end_user(self):
+
+    def test_anonymous(self):
         self.view_homepage()
         self.search_app()
-        self.install_free_app()
-        # generate some more random load
         self.query_search()
         self.query_categories()
         self.query_apps_detail()
 
+    def test_end_user(self):
+        self.view_homepage()
+        self.search_app()
+        self.install_free_app()
+        # XXX to add: rate app etc
+
     def test_developer(self):
+        self.setBasicAuth('developer@mozilla.com', read_password())
         try:
-            self.setBasicAuth('developer@mozilla.com', read_password())
             self.view_homepage()
             self.search_app()
             self.submit_app()
@@ -179,8 +185,26 @@ class MarketplaceTest(FunkLoadTestCase):
         pass
 
     def test_marketplace(self):
-        # pick a random scenario and run it
-        random.choice([self.test_developer, self.test_end_user])()
+        """ Current rates:
+
+            - test_anonymous: 80%
+            - test_end_user: 10%
+            - test_developer: 8%
+            - test_editor: 2%
+        """
+        pick = random.randint(1, 100)
+
+        if self._ranges is None:
+            self._ranges = [(self.test_editor, (1, 2)),
+                            (self.test_developer, (3, 11)),
+                            (self.test_end_user, (12, 22)),
+                            (self.test_anonymous, (22, 100)]
+
+        for test_, range_ in self._ranges:
+            if pick in range_:
+                return test_()
+
+        raise ValueError('Your CPU is erratic')
 
 
 def add_csrf_token(response, params):
