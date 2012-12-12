@@ -115,6 +115,32 @@ class MarketplaceTest(FunkLoadTestCase):
         self.assertTrue('data-manifest_url='
             '"https://mobile.twitter.com/cache/twitter.webapp"' in ret.body)
 
+    def rate_app(self, appname='twitter', rating=3, comment=None):
+        url = '/app/%s/reviews/add' % appname
+        ret = self.get(url)
+
+        if comment is None:
+            body = 'This app is the cool thing'
+        else:
+            body = comment
+
+        # adding a unique id
+        body += uuid.uuid1().hex
+
+        rating = str(rating)
+
+        params = [['body', body],
+                  ['rating', rating]]
+
+        add_csrf_token(ret, params)
+        ret = self.post('/developers/submit/app/manifest', params=params)
+
+        # we should be redirected to /app/APNAME/reviews
+        self.assert_(self.getLastURL(), '/app/%s/reviews' % appname)
+
+        # and see the review
+        self.assert_(body in ret.body)
+
     def submit_app(self):
         # try to submit an app
         ret = self.get('/developers/submit/app', ok_codes=[200, 302])
@@ -167,7 +193,7 @@ class MarketplaceTest(FunkLoadTestCase):
         self.view_homepage()
         self.search_app()
         self.install_free_app()
-        # XXX to add: rate app etc
+        # self.rate_app()  to add once auth in place
 
     def test_developer(self):
         self.setBasicAuth('developer@mozilla.com', read_password())
