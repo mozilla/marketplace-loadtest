@@ -190,10 +190,14 @@ class MarketplaceTest(FunkLoadTestCase):
         self.query_apps_detail()
 
     def test_end_user(self):
-        self.view_homepage()
-        self.search_app()
-        self.install_free_app()
-        # self.rate_app()  to add once auth in place
+        self.setBasicAuth('enduser@mozilla.com', read_password())
+        try:
+            self.view_homepage()
+            self.search_app()
+            self.install_free_app()
+            self.rate_app()
+        finally:
+            self.clearBasicAuth()
 
     def test_developer(self):
         self.setBasicAuth('developer@mozilla.com', read_password())
