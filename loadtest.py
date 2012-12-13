@@ -261,7 +261,7 @@ class MarketplaceTest(FunkLoadTestCase):
             if pick in range_:
                 return test_()
 
-        raise ValueError('Your CPU is erratic')
+        raise ValueError('Your CPU is erratic %d' % pick)
 
 
 def add_csrf_token(response, params):
