@@ -160,7 +160,10 @@ class MarketplaceTest(FunkLoadTestCase):
 
         # checking the result
         ret = self.get('/settings')
-        self.assert_(original not in ret.body)
+        self.assert_(display in ret.body,
+                     'Changing the display did not work')
+        self.assert_(original not in ret.body,
+                     'Found %r for the display' % original)
 
     def submit_app(self):
         # try to submit an app
