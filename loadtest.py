@@ -177,11 +177,13 @@ class MarketplaceTest(FunkLoadTestCase):
             params = [['read_dev_agreement', 'True']]
             add_csrf_token(ret, params)
             ret = self.post(ret.url, params=params)
+
         # submit the manifest
         params = [['manifest', manifest_url]]
         add_csrf_token(ret, params)
         ret = self.post('/developers/upload-manifest', params=params)
         data = json.loads(ret.body)
+        validation = data['validation']
         app_exists = False
 
         if isinstance(validation, dict) and 'messages' in validation:
