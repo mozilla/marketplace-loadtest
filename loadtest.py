@@ -4,6 +4,8 @@ import random
 import re
 import unicodedata
 import uuid
+import time
+import re
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
 
@@ -12,6 +14,9 @@ from util import read_password
 USER_AGENT = 'Mozilla/5.0 (Android; Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'
 CSRF_REGEX = re.compile(r'.*csrfmiddlewaretoken\' value=\'(.*)\'')
 WEBAPP = 'http://%s.webapp.lolnet.org/manifest.webapp'
+RE_NAME = ('<input id="id_display_name" type="text" maxlength="50" '
+           'attrs="{}" value="(.*?)" ')
+RE_NAME = re.compile(RE_NAME, re.M | re.I)
 
 
 class MarketplaceTest(FunkLoadTestCase):
@@ -139,6 +144,24 @@ class MarketplaceTest(FunkLoadTestCase):
         ret = self.get('/app/%s/reviews' % appname)
         self.assert_(body in ret.body)
 
+    def edit_details(self):
+        # since we can have other tests doing this in
+        # parallel, we'll just check that it was changed
+        ret = self.get('/settings')
+        original = RE_NAME.findall(ret.body)
+        if len(original) == 0:
+            original = 'UNKNOWN'
+        else:
+            original = original[0]
+        display = str(int(time.time()))
+        params = [['display_name', display]]
+        add_csrf_token(ret, params)
+        self.post('/settings', params=params)
+
+        # checking the result
+        ret = self.get('/settings')
+        self.assert_(original not in ret.body)
+
     def submit_app(self):
         # try to submit an app
         ret = self.get('/developers/submit/app', ok_codes=[200, 302])
@@ -193,6 +216,7 @@ class MarketplaceTest(FunkLoadTestCase):
             self.search_app()
             self.install_free_app()
             self.rate_app()
+            self.edit_details()
         finally:
             self.clearBasicAuth()
 
