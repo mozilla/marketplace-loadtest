@@ -125,7 +125,7 @@ class MarketplaceTest(FunkLoadTestCase):
             body = comment
 
         # adding a unique id
-        body += uuid.uuid1().hex
+        body += ' ' + uuid.uuid1().hex
 
         rating = str(rating)
 
@@ -135,10 +135,8 @@ class MarketplaceTest(FunkLoadTestCase):
         add_csrf_token(ret, params)
         ret = self.post(url, params=params)
 
-        # we should be redirected to /app/APNAME/reviews
-        self.assert_(self.getLastURL(), '/app/%s/reviews' % appname)
-
-        # and see the review
+        # let's see if our review made it
+        ret = self.get('/app/%s/reviews' % appname)
         self.assert_(body in ret.body)
 
     def submit_app(self):
