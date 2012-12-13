@@ -153,15 +153,13 @@ class MarketplaceTest(FunkLoadTestCase):
             original = 'UNKNOWN'
         else:
             original = original[0]
-        display = str(int(time.time()))
+        display = uuid.uuid1().hex
         params = [['display_name', display]]
         add_csrf_token(ret, params)
         self.post('/settings', params=params)
 
         # checking the result
         ret = self.get('/settings')
-        self.assert_(display in ret.body,
-                     'Changing the display did not work')
         self.assert_(original not in ret.body,
                      'Found %r for the display' % original)
 
