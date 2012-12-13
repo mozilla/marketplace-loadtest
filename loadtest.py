@@ -250,7 +250,7 @@ class MarketplaceTest(FunkLoadTestCase):
             - test_developer: 8%
             - test_editor: 2%
         """
-        return random.choice(self.choices)
+        random.choice(self.choices)()
 
 
 def add_csrf_token(response, params):
