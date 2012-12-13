@@ -14,10 +14,8 @@ from util import read_password
 USER_AGENT = 'Mozilla/5.0 (Android; Mobile; rv:18.0) Gecko/18.0 Firefox/18.0'
 CSRF_REGEX = re.compile(r'.*csrfmiddlewaretoken\' value=\'(.*)\'')
 WEBAPP = 'http://%s.webapp.lolnet.org/manifest.webapp'
-RE_NAME = ('<input id="id_display_name" type="text" maxlength="50" '
-           'attrs="{}" value="(.*?)" ')
+RE_NAME = '<input name="display_name".*?value="(.*?)" '
 RE_NAME = re.compile(RE_NAME, re.M | re.I)
-
 
 class MarketplaceTest(FunkLoadTestCase):
 
@@ -204,6 +202,7 @@ class MarketplaceTest(FunkLoadTestCase):
         self.assertTrue('/submit/app/details/' in ret.url, ret.url)
 
     def test_anonymous(self):
+        self.clearBasicAuth()
         self.view_homepage()
         self.search_app()
         self.query_search()
@@ -216,8 +215,8 @@ class MarketplaceTest(FunkLoadTestCase):
             self.view_homepage()
             self.search_app()
             self.install_free_app()
-            self.rate_app()
             self.edit_details()
+            self.rate_app()
         finally:
             self.clearBasicAuth()
 
