@@ -133,7 +133,7 @@ class MarketplaceTest(FunkLoadTestCase):
                   ['rating', rating]]
 
         add_csrf_token(ret, params)
-        ret = self.post('/developers/submit/app/manifest', params=params)
+        ret = self.post(url, params=params)
 
         # we should be redirected to /app/APNAME/reviews
         self.assert_(self.getLastURL(), '/app/%s/reviews' % appname)
@@ -180,7 +180,6 @@ class MarketplaceTest(FunkLoadTestCase):
         add_csrf_token(ret, params)
         ret = self.post('/developers/submit/app/manifest', params=params)
         self.assertTrue('/submit/app/details/' in ret.url, ret.url)
-
 
     def test_anonymous(self):
         self.view_homepage()
