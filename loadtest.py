@@ -207,6 +207,13 @@ class MarketplaceTest(FunkLoadTestCase):
         add_csrf_token(ret, params)
         ret = self.post('/developers/submit/app/manifest', params=params)
         self.assertTrue('/submit/app/details/' in ret.url, ret.url)
+        # finally delete the app
+        app_slug = ret.url.split('/')[-1]
+        # get a csrf token
+        ret = self.get('/developers/app/%s/status' % app_slug)
+        params = []
+        add_csrf_token(ret, params)
+        self.post('/developers/app/%s/delete' % app_slug, params=params)
 
     def test_anonymous(self):
         self.clearBasicAuth()
