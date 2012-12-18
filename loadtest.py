@@ -5,8 +5,6 @@ import random
 import re
 import unicodedata
 import uuid
-import time
-import re
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
 
