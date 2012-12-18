@@ -1,5 +1,6 @@
 import base64
 import json
+import os
 import random
 import re
 import unicodedata
@@ -16,6 +17,11 @@ CSRF_REGEX = re.compile(r'.*csrfmiddlewaretoken\' value=\'(.*)\'')
 WEBAPP = 'http://%s.webapp.lolnet.org/manifest.webapp'
 RE_NAME = '<input name="display_name".*?value="(.*?)" '
 RE_NAME = re.compile(RE_NAME, re.M | re.I)
+
+HERE = os.path.abspath(os.path.dirname(__name__))
+ICON = os.path.join(HERE, 'icon.png')
+SCREENSHOT = os.path.join(HERE, 'screenshot.png')
+
 
 class MarketplaceTest(FunkLoadTestCase):
 
