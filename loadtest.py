@@ -30,17 +30,8 @@ class MarketplaceTest(FunkLoadTestCase):
 
         self.root = self.conf_get('main', 'url')
         self.lang = 'en-US'
-
-        # on startup, select a bunch of categories /
-        # applications to use when running the test.
-        # select 4 categories and 4 applications out of all of them.
-        categories = ('entertainment-sports', u'business', u'games',
-            u'music', u'news-weather', u'productivity', 'social',
-            u'travel', u'books-reference', u'education', u'health-fitness',
-            u'lifestyle', u'photos-media', u'utilities', u'shopping')
-
-        self.categories = random.sample(categories, 4)
         self._apps = None
+        self._categories = None
         self.choices = ([self.test_editor] * 2 + [self.test_developer] * 8 +
                         [self.test_end_user] * 10 + [self.test_anonymous] * 80)
 
@@ -83,6 +74,12 @@ class MarketplaceTest(FunkLoadTestCase):
         resp = self.get('/api/apps/search/')
         content = json.loads(resp.body)
         return [p['slug'] for p in content['objects']]
+
+    @property
+    def categories(self):
+        if self._categories is None:
+            self._categories = random.sample(self.get_categories(), 4)
+        return self._categories
 
     def get_categories(self):
         """Get all the categories from the marketplace API"""
