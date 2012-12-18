@@ -136,9 +136,7 @@ class MarketplaceTest(FunkLoadTestCase):
 
         # adding a unique id
         body += ' ' + uuid.uuid1().hex
-
         rating = str(rating)
-
         params = [['body', body],
                   ['rating', rating]]
 
@@ -203,6 +201,7 @@ class MarketplaceTest(FunkLoadTestCase):
 
         if isinstance(validation, dict) and 'errors' in validation:
             self.assertEqual(data['validation']['errors'], 0, data)
+
         # now we can submit the app basics, first load the form again
         ret = self.get('/developers/submit/app/manifest')
         params = [['upload', data['upload']],
