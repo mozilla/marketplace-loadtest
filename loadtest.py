@@ -107,7 +107,6 @@ class MarketplaceTest(FunkLoadTestCase):
     def view_homepage(self):
         ret = self.get('/')
         self.assertTrue('Categories' in ret.body)
-        self.assertTrue('Games' in ret.body)
 
     def search_app(self, query='twi'):
         # search for some non-empty string, to make a realistic and not
