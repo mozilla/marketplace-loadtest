@@ -7,6 +7,7 @@ import unicodedata
 import uuid
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
+from webunit.utility import Upload
 
 from util import read_password
 
@@ -211,9 +212,28 @@ class MarketplaceTest(FunkLoadTestCase):
         add_csrf_token(ret, params)
         ret = self.post('/developers/submit/app/manifest', params=params)
         self.assertTrue('/submit/app/details/' in ret.url, ret.url)
-        # finally delete the app
         app_slug = ret.url.split('/')[-1]
-        # get a csrf token
+
+        # upload icon
+        params = [['upload_image', Upload(ICON)]]
+        add_csrf_token(ret, params)
+        ret = self.post('/developers/app/%s/upload_icon' % app_slug,
+            params=params)
+        data = json.loads(ret.body)
+        self.assertEqual(len(data['errors']), 0, data)
+        icon_hash = data['upload_hash']
+
+        # upload screenshot
+        ret = self.get('/developers/app/%s/edit' % app_slug)
+        params = [['upload_image', Upload(SCREENSHOT)]]
+        add_csrf_token(ret, params)
+        ret = self.post('/developers/app/%s/upload_image' % app_slug,
+            params=params)
+        data = json.loads(ret.body)
+        self.assertEqual(len(data['errors']), 0, data)
+        screenshot_hash = data['upload_hash']
+
+        # finally delete the app
         ret = self.get('/developers/app/%s/status' % app_slug)
         params = []
         add_csrf_token(ret, params)
