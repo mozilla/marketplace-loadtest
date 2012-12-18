@@ -111,12 +111,8 @@ class MarketplaceTest(FunkLoadTestCase):
     def search_app(self, query='twi'):
         # search for some non-empty string, to make a realistic and not
         # too expensive query
-        ret = self.get('/search/?q=%s' % query, ok_codes=[200, 503])
-        if ret.code == 503:
-            self.assertTrue('Search Unavailable' in ret.body)
-        else:
-            self.assertTrue('Search Results' in ret.body)
-        self.assertEqual(ret.code, 200)
+        ret = self.get('/search/?q=%s' % query)
+        self.assertTrue('Search Results' in ret.body)
 
     def install_free_app(self):
         # all the logic for free apps is client side - as long as the
