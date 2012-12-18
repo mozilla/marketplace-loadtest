@@ -66,7 +66,9 @@ class MarketplaceTest(FunkLoadTestCase):
     @property
     def apps(self):
         if self._apps is None:
-            self._apps = random.sample(self.get_apps(), 4)
+            self._apps = self.get_apps()
+            if len(self._apps) > 4:
+                self._apps = random.sample(self._apps, 4)
         return self._apps
 
     def get_apps(self):
@@ -78,7 +80,9 @@ class MarketplaceTest(FunkLoadTestCase):
     @property
     def categories(self):
         if self._categories is None:
-            self._categories = random.sample(self.get_categories(), 4)
+            self._categories = self.get_categories()
+            if len(self._categories) > 4:
+                self._categories = random.sample(self._categories)
         return self._categories
 
     def get_categories(self):
