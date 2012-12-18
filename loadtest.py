@@ -117,11 +117,15 @@ class MarketplaceTest(FunkLoadTestCase):
     def install_free_app(self):
         # all the logic for free apps is client side - as long as the
         # manifest url is in the page, the process should succeed
-        ret = self.get('/app/twitter')
-        self.assertTrue('data-manifest_url='
-            '"https://mobile.twitter.com/cache/twitter.webapp"' in ret.body)
+        if not self.apps:
+            return
+        ret = self.get('/app/%s' % random.choice(self.apps))
+        self.assertTrue('data-manifest_url="' in ret.body)
 
-    def rate_app(self, appname='twitter', rating=3, comment=None):
+    def rate_app(self, rating=3, comment=None):
+        if not self.apps:
+            return
+        appname = random.choice(self.apps)
         url = '/app/%s/reviews/add' % appname
         ret = self.get(url)
 
