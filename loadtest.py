@@ -1,4 +1,5 @@
 import base64
+from Cookie import Morsel
 import json
 import os
 import random
@@ -224,7 +225,7 @@ class MarketplaceTest(FunkLoadTestCase):
         icon_hash = data['upload_hash']
 
         # upload screenshot
-        ret = self.get('/developers/app/%s/edit' % app_slug)
+        ret = self.get('/developers/submit/app/details/%s' % app_slug)
         params = [['upload_image', Upload(SCREENSHOT)]]
         add_csrf_token(ret, params)
         ret = self.post('/developers/app/%s/upload_image' % app_slug,
@@ -232,6 +233,49 @@ class MarketplaceTest(FunkLoadTestCase):
         data = json.loads(ret.body)
         self.assertEqual(len(data['errors']), 0, data)
         screenshot_hash = data['upload_hash']
+
+        # fill in some more app details
+        ret = self.get('/developers/submit/app/details/%s' % app_slug)
+        params = [
+            ['slug', app_slug],
+            ['slug_en-us', app_slug],
+            ['name_en-us', app_slug],
+            ['summary_en-us', 'HA Test web app'],
+            ['privacy_policy_en-us', 'We sell all your data!'],
+            ['support_email_en-us', 'marketplace-devs@mozilla.com'],
+            ['icon_upload_hash', icon_hash],
+            ['icon_upload_hash_en-us', icon_hash],
+            ['icon_type', 'image/png'],
+            ['icon_type_en-us', 'image/png'],
+            ['categories', '167'],
+            ['categories_en-us', '167'],
+            ['files-0-position', '0'],
+            ['files-0-position_en-us', '0'],
+            ['files-0-upload_hash', screenshot_hash],
+            ['files-0-upload_hash_en-us', screenshot_hash],
+            ['files-0-unsaved_image_type', 'image/png'],
+            ['files-0-unsaved_image_type_en-us', 'image/png'],
+            ['files-TOTAL_FORMS', '1'],
+            ['files-TOTAL_FORMS_en-us', '1'],
+            ['files-INITIAL_FORMS', '0'],
+            ['files-INITIAL_FORMS_en-us', '0'],
+            ['files-MAX_NUM_FORMS', '1'],
+            ['files-MAX_NUM_FORMS_en-us', '1'],
+        ]
+        token = add_csrf_token(ret, params)
+        if token:
+            # work around creative code in app edit form
+            params.append(['csrfmiddlewaretoken_en-us', token])
+
+        # hack in the current_locale cookie
+        cookies = self._browser.cookies
+        morsel = Morsel()
+        morsel.set('current_locale', 'en-us', 'en-us')
+        for domain, value in cookies.items():
+            value['/'].setdefault('current_locale', morsel)
+
+        # fill details and submit
+        ret = self.post(ret.url, params=params)
 
         # finally delete the app
         ret = self.get('/developers/app/%s/status' % app_slug)
@@ -288,6 +332,8 @@ def add_csrf_token(response, params):
     token = CSRF_REGEX.findall(response.body)
     if token:
         params.append(['csrfmiddlewaretoken', token[0]])
+        return token[0]
+    return None
 
 
 def slugify(value):
