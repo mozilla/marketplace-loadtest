@@ -31,7 +31,7 @@ if not os.path.exists(ICON):
 SCREENSHOT = os.path.join(HERE, 'screenshot.png')
 if not os.path.exists(SCREENSHOT):
     with open(SCREENSHOT, 'wb') as f:
-       f.write(urllib2.urlopen(GITHUB + 'sceenshot.png').read())
+       f.write(urllib2.urlopen(GITHUB + 'screenshot.png').read())
 
 
 class MarketplaceTest(FunkLoadTestCase):
