@@ -6,6 +6,7 @@ import random
 import re
 import unicodedata
 import uuid
+import urllib2
 
 from funkload.FunkLoadTestCase import FunkLoadTestCase
 from webunit.utility import Upload
@@ -19,8 +20,18 @@ RE_NAME = '<input name="display_name".*?value="(.*?)" '
 RE_NAME = re.compile(RE_NAME, re.M | re.I)
 
 HERE = os.path.abspath(os.path.dirname(__name__))
+GITHUB =  'https://raw.github.com/mozilla/marketplace-loadtest/master/'
+
 ICON = os.path.join(HERE, 'icon.png')
+if not os.path.exists(ICON):
+    with open(ICON, 'wb') as f:
+       f.write(urllib2.urlopen(GITHUB + 'icon.png').read())
+
+
 SCREENSHOT = os.path.join(HERE, 'screenshot.png')
+if not os.path.exists(SCREENSHOT):
+    with open(SCREENSHOT, 'wb') as f:
+       f.write(urllib2.urlopen(GITHUB + 'sceenshot.png').read())
 
 
 class MarketplaceTest(FunkLoadTestCase):
